@@ -1,7 +1,8 @@
 public enum GameObjectType
 {
-  Player,
-  Obstacle,
-  Box,
-  Floor
+  Player, // 0
+  Obstacle, // 1
+  Box, // 2
+  Floor, // 3
+  Goal // 4
 }

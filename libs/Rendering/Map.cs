@@ -1,21 +1,24 @@
 namespace libs;
 using Newtonsoft.Json;
 
-public class Map {
+public class Map
+{
     private char[,] RepresentationalLayer;
     private GameObject?[,] GameObjectLayer;
 
     private int _mapWidth;
     private int _mapHeight;
 
-    public Map () {
+    public Map()
+    {
         _mapWidth = 30;
         _mapHeight = 8;
         RepresentationalLayer = new char[_mapHeight, _mapWidth];
         GameObjectLayer = new GameObject[_mapHeight, _mapWidth];
     }
 
-    public Map (int width, int height) {
+    public Map(int width, int height)
+    {
         _mapWidth = width;
         _mapHeight = height;
         RepresentationalLayer = new char[_mapHeight, _mapWidth];
@@ -40,25 +43,32 @@ public class Map {
     public int MapWidth
     {
         get { return _mapWidth; } // Getter
-        set { _mapWidth = value; Initialize();} // Setter
+        set { _mapWidth = value; Initialize(); } // Setter
     }
 
     public int MapHeight
     {
         get { return _mapHeight; } // Getter
-        set { _mapHeight = value; Initialize();} // Setter
+        set { _mapHeight = value; Initialize(); } // Setter
     }
 
-    public GameObject Get(int x, int y){
+    public GameObject Get(int x, int y)
+    {
         return GameObjectLayer[x, y];
     }
 
-    public void Set(GameObject gameObject){
+    public void Set(GameObject gameObject)
+    {
         int posY = gameObject.PosY;
         int posX = gameObject.PosX;
         int prevPosY = gameObject.GetPrevPosY();
         int prevPosX = gameObject.GetPrevPosX();
-        
+
+        if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player)
+        {
+            return;
+        }
+
         if (prevPosX >= 0 && prevPosX < _mapWidth &&
                 prevPosY >= 0 && prevPosY < _mapHeight)
         {

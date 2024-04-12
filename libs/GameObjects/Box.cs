@@ -1,10 +1,12 @@
 namespace libs;
 
-public class Box : GameObject {
+public class Box : GameObject
+{
 
-    public Box () : base(){
+    public Box() : base()
+    {
         Type = GameObjectType.Player;
-        CharRepresentation = '○';
+        CharRepresentation = '■';
         Color = ConsoleColor.DarkGreen;
     }
 }

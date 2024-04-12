@@ -7,24 +7,27 @@ public class GameObject : IGameObject, IMovement
 
     private int _posX;
     private int _posY;
-    
+
     private int _prevPosX;
     private int _prevPosY;
 
     public GameObjectType Type;
 
-    public GameObject() {
+    public GameObject()
+    {
         this._posX = 5;
         this._posY = 5;
         this._color = ConsoleColor.Gray;
     }
 
-    public GameObject(int posX, int posY){
+    public GameObject(int posX, int posY)
+    {
         this._posX = posX;
         this._posY = posY;
     }
 
-    public GameObject(int posX, int posY, ConsoleColor color){
+    public GameObject(int posX, int posY, ConsoleColor color)
+    {
         this._posX = posX;
         this._posY = posY;
         this._color = color;
@@ -32,7 +35,7 @@ public class GameObject : IGameObject, IMovement
 
     public char CharRepresentation
     {
-        get { return _charRepresentation ; }
+        get { return _charRepresentation; }
         set { _charRepresentation = value; }
     }
 
@@ -54,18 +57,28 @@ public class GameObject : IGameObject, IMovement
         set { _posY = value; }
     }
 
-    public int GetPrevPosY() {
+    public int GetPrevPosY()
+    {
         return _prevPosY;
     }
-    
-    public int GetPrevPosX() {
+
+    public int GetPrevPosX()
+    {
         return _prevPosX;
     }
 
-    public void Move(int dx, int dy) {
+    public void Move(int dx, int dy)
+    {
         _prevPosX = _posX;
         _prevPosY = _posY;
         _posX += dx;
         _posY += dy;
     }
+
+    public void UndoMove()
+    {
+        _posX = _prevPosX;
+        _posY = _prevPosY;
+    }
+
 }

@@ -1,9 +1,11 @@
 namespace libs;
 
-public class Floor : GameObject {
+public class Floor : GameObject
+{
 
-    public Floor () : base(){
+    public Floor() : base()
+    {
         Type = GameObjectType.Floor;
-        CharRepresentation = '.';
+        CharRepresentation = ' ';
     }
 }

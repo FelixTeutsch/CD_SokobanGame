@@ -2,21 +2,27 @@ namespace libs;
 
 public class GameObjectFactory : IGameObjectFactory
 {
-    public GameObject CreateGameObject(dynamic obj) {
+    public GameObject CreateGameObject(dynamic obj)
+    {
 
         GameObject newObj = new GameObject();
-        int type = obj.Type;
+        string type = obj.Type;
 
         switch (type)
         {
-            case (int) GameObjectType.Player:
-                newObj = obj.ToObject<Player>();
+            case "Player":
+                newObj = PlayerSingelton.Instance;
+                newObj.PosX = obj.PosX;
+                newObj.PosY = obj.PosY;
                 break;
-            case (int) GameObjectType.Obstacle:
+            case "Obstacle":
                 newObj = obj.ToObject<Obstacle>();
                 break;
-            case (int) GameObjectType.Box:
+            case "Box":
                 newObj = obj.ToObject<Box>();
+                break;
+            case "Goal":
+                newObj = obj.ToObject<Goal>();
                 break;
         }
 

@@ -16,9 +16,12 @@ public static class FileHandler
 
     private static void Initialize()
     {
-        if(Environment.GetEnvironmentVariable(envVar) != null){
-            filePath = Environment.GetEnvironmentVariable(envVar);
-        };
+        filePath = "../Setup.json";
+    }
+
+    public static void loadNewLevel(string path)
+    {
+        filePath = path;
     }
 
     public static dynamic ReadJson()

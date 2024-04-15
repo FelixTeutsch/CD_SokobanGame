@@ -18,7 +18,10 @@ class Program
 
             // Handle keyboard input
             ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            inputHandler.Handle(keyInfo);
+            bool skipCollisionCheck = inputHandler.Handle(keyInfo);
+            if (skipCollisionCheck)
+                continue;
+
             // check collision
             engine.CheckCollision();
         }

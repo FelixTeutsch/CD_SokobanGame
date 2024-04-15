@@ -37,6 +37,15 @@ public class GameObject : IGameObject, IMovement
         this._color = color;
     }
 
+    public GameObject(int posX, int posY, ConsoleColor color, char charRepresentation, GameObjectType type)
+    {
+        this._posX = posX;
+        this._posY = posY;
+        this._color = color;
+        this._charRepresentation = charRepresentation;
+        this.Type = type;
+    }
+
     public char CharRepresentation
     {
         get { return _charRepresentation; }
@@ -85,6 +94,21 @@ public class GameObject : IGameObject, IMovement
     public int getDx()
     {
         return dX;
+    }
+
+    public void setPosX(int posX)
+    {
+        this._posX = posX;
+    }
+
+    public void setPosY(int posY)
+    {
+        this._posY = posY;
+    }
+
+    public void setColor(ConsoleColor color)
+    {
+        this._color = color;
     }
 
     public void Move(int dx, int dy)

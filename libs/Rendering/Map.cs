@@ -4,10 +4,17 @@ using Newtonsoft.Json;
 public class Map
 {
     private char[,] RepresentationalLayer;
+
+    private List<GameObject?[,]> history = new List<GameObject?[,]>();
     private GameObject?[,] GameObjectLayer;
 
     private int _mapWidth;
     private int _mapHeight;
+
+    public GameObject?[,] GetGameObjectLayer()
+    {
+        return GameObjectLayer;
+    }
 
     public Map()
     {
@@ -64,6 +71,8 @@ public class Map
         int prevPosY = gameObject.GetPrevPosY();
         int prevPosX = gameObject.GetPrevPosX();
 
+        GameObject gameObjectCopy = new GameObject(posX, posY, gameObject.Color, gameObject.CharRepresentation, gameObject.Type);
+
         if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player)
         {
             return;
@@ -78,8 +87,25 @@ public class Map
         if (posX >= 0 && posX < _mapWidth &&
                 posY >= 0 && posY < _mapHeight)
         {
-            GameObjectLayer[posY, posX] = gameObject;
+            if (gameObject.Type == GameObjectType.Player)
+                GameObjectLayer[posY, posX] = gameObject;
+            else
+                GameObjectLayer[posY, posX] = gameObjectCopy;
             RepresentationalLayer[gameObject.PosY, gameObject.PosX] = gameObject.CharRepresentation;
+        }
+    }
+
+    public void Save()
+    {
+        history.Add(GameObjectLayer);
+    }
+
+    public void Undo()
+    {
+        if (history.Count > 0)
+        {
+            GameObjectLayer = history[history.Count - 1];
+            history.RemoveAt(history.Count - 1);
         }
     }
 }

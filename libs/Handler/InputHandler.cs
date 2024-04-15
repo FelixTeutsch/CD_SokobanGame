@@ -1,13 +1,16 @@
 namespace libs;
 
-public sealed class InputHandler{
+public sealed class InputHandler
+{
 
     private static InputHandler? _instance;
     private GameEngine engine;
 
-    public static InputHandler Instance {
-        get{
-            if(_instance == null)
+    public static InputHandler Instance
+    {
+        get
+        {
+            if (_instance == null)
             {
                 _instance = new InputHandler();
             }
@@ -15,16 +18,19 @@ public sealed class InputHandler{
         }
     }
 
-    private InputHandler() {
+    private InputHandler()
+    {
         //INIT PROPS HERE IF NEEDED
         engine = GameEngine.Instance;
     }
 
-    public void Handle(ConsoleKeyInfo keyInfo)
+    public bool Handle(ConsoleKeyInfo keyInfo)
     {
+        bool result = false;
         GameObject focusedObject = engine.GetFocusedObject();
 
-        if (focusedObject != null) {
+        if (focusedObject != null)
+        {
             // Handle keyboard input to move the player
             switch (keyInfo.Key)
             {
@@ -40,11 +46,15 @@ public sealed class InputHandler{
                 case ConsoleKey.RightArrow:
                     focusedObject.Move(1, 0);
                     break;
+                case ConsoleKey.Z:
+                    engine.Undo();
+                    result = true;
+                    break;
                 default:
                     break;
             }
         }
-        
+        return result;
     }
 
 }

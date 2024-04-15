@@ -146,6 +146,60 @@ public sealed class GameEngine
             // Get position
             // iterate through all other objects and check if there is already an object at that position
         }
+
+        // Save the updated map
+        map.Save();
+    }
+
+    public void Undo()
+    {
+        map.Undo();
+        List<Box> boxes = gameObjects.OfType<Box>().ToList();
+        foreach (var box in boxes)
+        {
+            gameObjects.Remove(box);
+        }
+
+        GameObject?[,] gameObjectLayer = map.GetGameObjectLayer();
+
+        for (int x = 0; x < gameObjectLayer.GetLength(0); x++)
+        {
+            for (int y = 0; y < gameObjectLayer.GetLength(1); y++)
+            {
+                if (gameObjectLayer[x, y] != null)
+                {
+                    if (gameObjectLayer[x, y].Type == GameObjectType.Box)
+                    {
+
+                        Box newBox = new Box(//
+                            gameObjectLayer[x, y].PosX, //
+                            gameObjectLayer[x, y].PosY, //
+                            gameObjectLayer[x, y].Color, //
+                            gameObjectLayer[x, y].CharRepresentation, //
+                            GameObjectType.Box);
+                        AddGameObject(newBox);
+                    }
+
+                    else if (gameObjectLayer[x, y].Type == GameObjectType.Player)
+                    {
+                        _focusedObject = gameObjectLayer[x, y];
+                        _focusedObject.PosX = y;
+                        _focusedObject.PosY = x;
+                    }
+                }
+            }
+        }
+
+
+        missingBoxes = boxes.Count;
+        boxes = gameObjects.OfType<Box>().ToList();
+        foreach (var box in boxes)
+        {
+            if (box.Color == ConsoleColor.Green)
+            {
+                missingBoxes--;
+            }
+        }
     }
 
     // Method to create GameObject using the factory from clients

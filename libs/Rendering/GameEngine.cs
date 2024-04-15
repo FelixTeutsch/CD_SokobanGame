@@ -160,6 +160,7 @@ public sealed class GameEngine
             gameObjects.Remove(box);
         }
 
+
         GameObject?[,] gameObjectLayer = map.GetGameObjectLayer();
 
         for (int x = 0; x < gameObjectLayer.GetLength(0); x++)

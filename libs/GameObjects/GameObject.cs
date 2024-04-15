@@ -5,6 +5,10 @@ public class GameObject : IGameObject, IMovement
     private char _charRepresentation = '#';
     private ConsoleColor _color;
 
+    // direction of the last movement
+    private int dX;
+    private int dY;
+
     private int _posX;
     private int _posY;
 
@@ -59,16 +63,34 @@ public class GameObject : IGameObject, IMovement
 
     public int GetPrevPosY()
     {
+        if (_prevPosY == null || _prevPosY == 0)
+            return _posY;
+
         return _prevPosY;
     }
 
     public int GetPrevPosX()
     {
+        if (_prevPosX == null || _prevPosX == 0)
+            return _posX;
+
         return _prevPosX;
+    }
+
+    public int getDy()
+    {
+        return dY;
+    }
+
+    public int getDx()
+    {
+        return dX;
     }
 
     public void Move(int dx, int dy)
     {
+        this.dY = dy;
+        this.dX = dx;
         _prevPosX = _posX;
         _prevPosY = _posY;
         _posX += dx;

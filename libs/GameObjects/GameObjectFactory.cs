@@ -15,8 +15,8 @@ public class GameObjectFactory : IGameObjectFactory
                 newObj.PosX = obj.PosX;
                 newObj.PosY = obj.PosY;
                 break;
-            case "Obstacle":
-                newObj = obj.ToObject<Obstacle>();
+            case "Wall":
+                newObj = obj.ToObject<Wall>();
                 break;
             case "Box":
                 newObj = obj.ToObject<Box>();

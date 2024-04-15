@@ -11,6 +11,13 @@ public sealed class GameEngine
     private static GameEngine? _instance;
     private IGameObjectFactory gameObjectFactory;
 
+    private int missingBoxes = 0;
+
+    public bool IsGameWon()
+    {
+        return missingBoxes == 0;
+    }
+
     public static GameEngine Instance
     {
         get
@@ -99,17 +106,42 @@ public sealed class GameEngine
             if (gameObject.PosX == _focusedObject.PosX && gameObject.PosY == _focusedObject.PosY)
             {
                 // check if wall
-                if (gameObject.Type == GameObjectType.Obstacle)
+                if (gameObject.Type == GameObjectType.Wall)
                 {
                     // do not move the player
                     _focusedObject.UndoMove();
                 }
-                // check if the object is a box
-                // if it is a box, check if there is an object behind it
-                // if there is an object behind it, check if it is a goal
-                // if it is a goal, remove the box and the goal
-                // if it is not a goal, do not move the player
-                // if there is no object behind it, move the player
+                // check if box
+                if (gameObject.Type == GameObjectType.Box)
+                {
+
+                    int boxX = gameObject.PosX + _focusedObject.getDx();
+                    int boxY = gameObject.PosY + _focusedObject.getDy();
+
+                    // check if there is a wall behind the box
+                    if (map.Get(boxY, boxX).Type == GameObjectType.Wall || map.Get(boxY, boxX).Type == GameObjectType.Box)
+                    {
+                        // do not move the player
+                        _focusedObject.UndoMove();
+                    }
+                    else
+                    {
+
+                        // move the box
+                        gameObject.PosX = boxX;
+                        gameObject.PosY = boxY;
+                        if (gameObject.Color == ConsoleColor.Green)
+                        {
+                            gameObject.Color = ConsoleColor.Yellow;
+                            missingBoxes++;
+                        }
+                        if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
+                        {
+                            missingBoxes--;
+                            gameObject.Color = ConsoleColor.Green;
+                        }
+                    }
+                }
             }
             // Get position
             // iterate through all other objects and check if there is already an object at that position
@@ -124,6 +156,9 @@ public sealed class GameEngine
 
     public void AddGameObject(GameObject gameObject)
     {
+        if (gameObject.Type == GameObjectType.Box)
+            missingBoxes++;
+
         gameObjects.Add(gameObject);
     }
 

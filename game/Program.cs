@@ -12,7 +12,7 @@ class Program
         engine.Setup();
 
         // Main game loop
-        while (true)
+        while (!engine.IsGameWon())
         {
             engine.Render();
 
@@ -22,5 +22,7 @@ class Program
             // check collision
             engine.CheckCollision();
         }
+        engine.Render();
+        Console.WriteLine("You won!");
     }
 }

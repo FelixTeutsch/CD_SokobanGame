@@ -5,4 +5,4 @@ This project is a colaboration between:
 - Hannah Frank (cc221009)
 - Yvonne Gassner (cc221037)
 - Felix Teutsch (cc221036)
-- Victor Petro (cc221023)
+- Victor Petro (cc221029)

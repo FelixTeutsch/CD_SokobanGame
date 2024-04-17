@@ -2,8 +2,4 @@
 **/obj/
 **/bin/*
 **/obj/*
-game/obj/*
-game/bin/*
-libs/obj/*
-libs/bin/*
-game/obj/Debug/net8.0/game.AssemblyInfoInputs.cache
+

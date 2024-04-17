@@ -26,10 +26,10 @@ class Program
                 engine.CheckCollision();
             }
             engine.Render();
-            Console.WriteLine("You won!\nPress any key to continue to the next level...");
+            Console.WriteLine("Level complete!\nPress any key to continue to the next level...");
             Console.ReadKey();
         }
         engine.Render();
-        Console.WriteLine("You won!");
+        Console.WriteLine("Congrats, you beat all levels!");
     }
 }

@@ -76,7 +76,7 @@ public sealed class GameEngine
         map.MapWidth = gameData.map.width;
         map.MapHeight = gameData.map.height;
 
-
+        levelName = gameData.levelName;
 
         foreach (var gameObject in gameData.gameObjects)
         {
@@ -93,12 +93,10 @@ public sealed class GameEngine
         //Clean the map
         Console.Clear();
 
-        map.Initialize();
-
         PlaceGameObjects();
 
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine(levelName);
+        Console.WriteLine("Level Name: " + levelName);
         //Render the map
         for (int i = 0; i < map.MapHeight; i++)
         {

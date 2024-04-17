@@ -3,6 +3,7 @@
 namespace libs;
 
 using Newtonsoft.Json;
+using System;
 
 public static class FileHandler
 {
@@ -26,7 +27,15 @@ public static class FileHandler
     {
         // Check if environment variable is set
         if (Directory.Exists(path))
+        {
             files = Directory.GetFiles(path);
+            Array.Sort(files);
+        }
+        else
+        {
+            throw new DirectoryNotFoundException($"Directory not found at path: {path}");
+        }
+
     }
 
     public static bool LoadNextLevel()

@@ -46,4 +46,41 @@ public static class FileHandler
             throw new Exception($"Error reading JSON file: {ex.Message}");
         }
     }
+
+    /*public static dynamic UpdateJson(string path){
+
+        if (string.IsNullOrEmpty(filePath))
+        {
+            throw new InvalidOperationException("JSON file path not provided in environment variable");
+        }
+
+    }*/
+
+    public static void WriteJson(object data, string filePath)
+{
+    try
+    {
+        string jsonString = JsonConvert.SerializeObject(data, Formatting.Indented);
+        File.WriteAllText(filePath, jsonString);
+        Console.WriteLine($"JSON data written to file: {filePath}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error writing JSON data to file: {ex.Message}");
+    }
+}
+
+    public static void saveGameState(GameObject? player , List<GameObject> gameObjects, Map map){
+
+        filePath = "../Games/Saves/Save1.json";
+        dynamic saveFileContent = ReadJson();
+
+        saveFileContent.map.height = map.MapHeight;
+        saveFileContent.map.width = map.MapWidth;
+        //saveFileContent.gameObject = gameObjects;
+
+        WriteJson(saveFileContent, filePath);
+        
+    }
+
 }

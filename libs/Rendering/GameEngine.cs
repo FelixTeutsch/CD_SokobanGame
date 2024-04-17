@@ -73,6 +73,12 @@ public sealed class GameEngine
 
     }
 
+    public void Save(){
+
+        FileHandler.saveGameState(_focusedObject, gameObjects, map);
+
+    }
+
     public void Render()
     {
 

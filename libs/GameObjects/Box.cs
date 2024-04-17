@@ -5,7 +5,7 @@ public class Box : GameObject
 
     public Box() : base()
     {
-        Type = GameObjectType.Player;
+        Type = GameObjectType.Box;
         CharRepresentation = '■';
         Color = ConsoleColor.DarkGreen;
     }

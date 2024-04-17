@@ -126,11 +126,12 @@ public sealed class GameEngine
                         _focusedObject.UndoMove();
                     }
                     else
-                    {
-
+                    { // <- why does c# have ugly brackets?
                         // move the box
                         gameObject.PosX = boxX;
                         gameObject.PosY = boxY;
+
+                        // this also works if we move box from target to target, because we are smart ppl
                         if (gameObject.Color == ConsoleColor.Green)
                         {
                             gameObject.Color = ConsoleColor.Yellow;

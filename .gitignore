@@ -2,3 +2,7 @@
 **/obj/
 **/bin/*
 **/obj/*
+game/obj/*
+game/bin/*
+libs/obj/*
+libs/bin/*

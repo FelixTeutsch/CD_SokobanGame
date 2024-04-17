@@ -6,7 +6,10 @@ using Newtonsoft.Json;
 
 public static class FileHandler
 {
-    private static string filePath;
+
+    private static string path = "../Games/Levels/";
+    private static int level = -1;
+    private static string[] files;
     private readonly static string envVar = "GAME_SETUP_PATH";
 
     static FileHandler()
@@ -14,32 +17,41 @@ public static class FileHandler
         Initialize();
     }
 
-    private static void Initialize()
+    public static bool IsLevelsLeft()
     {
-        filePath = "../Setup.json";
+        return level < files.Length;
     }
 
-    public static void loadNewLevel(string path)
+    private static void Initialize()
     {
-        filePath = path;
+        // Check if environment variable is set
+        if (Directory.Exists(path))
+            files = Directory.GetFiles(path);
+    }
+
+    public static bool LoadNextLevel()
+    {
+
+        level++;
+        return IsLevelsLeft();
     }
 
     public static dynamic ReadJson()
     {
-        if (string.IsNullOrEmpty(filePath))
+        if (string.IsNullOrEmpty(files[level]))
         {
             throw new InvalidOperationException("JSON file path not provided in environment variable");
         }
 
         try
         {
-            string jsonContent = File.ReadAllText(filePath);
+            string jsonContent = File.ReadAllText(files[level]);
             dynamic jsonData = JsonConvert.DeserializeObject(jsonContent);
             return jsonData;
         }
         catch (FileNotFoundException)
         {
-            throw new FileNotFoundException($"JSON file not found at path: {filePath}");
+            throw new FileNotFoundException($"JSON file not found at path: {path}");
         }
         catch (Exception ex)
         {

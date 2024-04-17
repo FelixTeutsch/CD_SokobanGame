@@ -10,8 +10,9 @@ public sealed class GameEngine
 {
     private static GameEngine? _instance;
     private IGameObjectFactory gameObjectFactory;
-
     private int missingBoxes = 0;
+    private string levelName = "";
+
 
     public bool IsGameWon()
     {
@@ -34,6 +35,9 @@ public sealed class GameEngine
     {
         //INIT PROPS HERE IF NEEDED
         gameObjectFactory = new GameObjectFactory();
+
+        //Added for proper display of game characters
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
     }
 
     private GameObject? _focusedObject;
@@ -53,16 +57,26 @@ public sealed class GameEngine
         return _focusedObject;
     }
 
+    public bool LoadNextLevel()
+    {
+        bool levelLeft = FileHandler.LoadNextLevel();
+        if (levelLeft)
+            Setup();
+        return levelLeft;
+    }
+
     public void Setup()
     {
-
-        //Added for proper display of game characters
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        // reset previous things:
+        gameObjects.Clear();
+        map.Reset();
 
         dynamic gameData = FileHandler.ReadJson();
 
         map.MapWidth = gameData.map.width;
         map.MapHeight = gameData.map.height;
+
+
 
         foreach (var gameObject in gameData.gameObjects)
         {
@@ -83,6 +97,8 @@ public sealed class GameEngine
 
         PlaceGameObjects();
 
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(levelName);
         //Render the map
         for (int i = 0; i < map.MapHeight; i++)
         {
@@ -92,6 +108,7 @@ public sealed class GameEngine
             }
             Console.WriteLine();
         }
+        Console.WriteLine(missingBoxes + " boxe(s) Missing");
     }
 
     public void CheckCollision()
@@ -127,7 +144,7 @@ public sealed class GameEngine
                     }
                     else
                     { // <- why does c# have ugly brackets?
-                        // move the box
+                      // move the box
                         gameObject.PosX = boxX;
                         gameObject.PosY = boxY;
 

@@ -9,21 +9,25 @@ class Program
         var engine = GameEngine.Instance;
         var inputHandler = InputHandler.Instance;
 
-        engine.Setup();
 
-        // Main game loop
-        while (!engine.IsGameWon())
+        while (engine.LoadNextLevel())
         {
+            // Main game loop
+            while (!engine.IsGameWon())
+            {
+                engine.Render();
+                // Handle keyboard input
+                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
+                bool skipCollisionCheck = inputHandler.Handle(keyInfo);
+                if (skipCollisionCheck)
+                    continue;
+
+                // check collision
+                engine.CheckCollision();
+            }
             engine.Render();
-
-            // Handle keyboard input
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            bool skipCollisionCheck = inputHandler.Handle(keyInfo);
-            if (skipCollisionCheck)
-                continue;
-
-            // check collision
-            engine.CheckCollision();
+            Console.WriteLine("You won!\nPress any key to continue to the next level...");
+            Console.ReadKey();
         }
         engine.Render();
         Console.WriteLine("You won!");

@@ -34,6 +34,7 @@ public class Map
 
     public void Initialize()
     {
+        history.Clear();
         RepresentationalLayer = new char[_mapHeight, _mapWidth];
         GameObjectLayer = new GameObject[_mapHeight, _mapWidth];
 
@@ -107,5 +108,10 @@ public class Map
             GameObjectLayer = history[history.Count - 1];
             history.RemoveAt(history.Count - 1);
         }
+    }
+
+    public void Reset()
+    {
+        Initialize();
     }
 }

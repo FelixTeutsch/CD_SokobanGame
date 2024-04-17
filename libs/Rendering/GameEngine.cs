@@ -111,6 +111,7 @@ public sealed class GameEngine
                     // do not move the player
                     _focusedObject.UndoMove();
                 }
+                else
                 // check if box
                 if (gameObject.Type == GameObjectType.Box)
                 {

@@ -210,7 +210,7 @@ public sealed class GameEngine
 
     public void AddGameObject(GameObject gameObject)
     {
-        if (gameObject.Type == GameObjectType.Box)
+        if (gameObject.Type == GameObjectType.Goal)
             missingGoals++;
 
         gameObjects.Add(gameObject);

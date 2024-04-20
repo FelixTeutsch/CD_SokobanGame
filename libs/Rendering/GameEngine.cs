@@ -67,12 +67,13 @@ public sealed class GameEngine
     {
         // reset previous things:
         gameObjects.Clear();
-        map.Reset();
 
         dynamic gameData = FileHandler.ReadJson();
 
         map.MapWidth = gameData.map.width;
         map.MapHeight = gameData.map.height;
+
+        map.Reset();
 
         levelName = gameData.levelName;
 
@@ -160,7 +161,6 @@ public sealed class GameEngine
     public void Undo()
     {
         map.Undo();
-
 
         GameObject?[,] gameObjectLayer = map.GetGameObjectLayer();
         if (gameObjectLayer == null)

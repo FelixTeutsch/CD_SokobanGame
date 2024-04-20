@@ -96,7 +96,7 @@ public sealed class GameEngine
         PlaceGameObjects();
 
         Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine("Level Name: " + levelName);
+        Console.WriteLine(levelName);
         //Render the map
         for (int i = 0; i < map.MapHeight; i++)
         {

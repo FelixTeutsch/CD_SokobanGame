@@ -110,62 +110,50 @@ public sealed class GameEngine
 
     public void CheckCollision()
     {
-        // player = _focusedObject
-        foreach (var gameObject in gameObjects)
+        // NEW COLLITION CHECK
+
+        GameObject player = _focusedObject;
+        GameObject obstacle = map.Get(player.PosY, player.PosX);
+        // move is allowed
+        if (obstacle == null || obstacle.Type == GameObjectType.Floor || obstacle.Type == GameObjectType.Goal)
+            return;
+
+        if (obstacle.Type == GameObjectType.Wall)
         {
-            if (gameObject == _focusedObject || gameObject.Type == GameObjectType.Goal)
-            {
-                continue;
-            }
-            if (gameObject.PosX == _focusedObject.PosX && gameObject.PosY == _focusedObject.PosY)
-            {
-                // check if wall
-                if (gameObject.Type == GameObjectType.Wall)
-                {
-                    // do not move the player
-                    _focusedObject.UndoMove();
-                }
-                else
-                // check if box
-                if (gameObject.Type == GameObjectType.Box)
-                {
-                    int boxX = gameObject.PosX + _focusedObject.getDx();
-                    int boxY = gameObject.PosY + _focusedObject.getDy();
-
-                    // check if there is a wall behind the box
-                    if (
-                        map.Get(boxY, boxX).Type == GameObjectType.Wall
-                        || map.Get(boxY, boxX).Type == GameObjectType.Box
-                    )
-                    {
-                        // do not move the player
-                        _focusedObject.UndoMove();
-                    }
-                    else
-                    { // <- why does c# have ugly brackets?
-                        // move the box
-                        gameObject.PosX = boxX;
-                        gameObject.PosY = boxY;
-
-                        // this also works if we move box from target to target, because we are smart ppl
-                        if (gameObject.Color == ConsoleColor.Green)
-                        {
-                            gameObject.Color = ConsoleColor.Yellow;
-                            missingGoals++;
-                        }
-                        if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
-                        {
-                            missingGoals--;
-                            gameObject.Color = ConsoleColor.Green;
-                        }
-                    }
-                }
-            }
-            // Get position
-            // iterate through all other objects and check if there is already an object at that position
+            _focusedObject.UndoMove();
+            return;
         }
+        else if (obstacle.Type == GameObjectType.Box)
+        {
+            int boxY = obstacle.PosY + player.getDy();
+            int boxX = obstacle.PosX + player.getDx();
+            GameObject obstacleObstacle = map.Get(boxY, boxX);
 
-        // Save the updated map
+            if (obstacleObstacle.Type == GameObjectType.Wall || obstacleObstacle.Type == GameObjectType.Box)
+            {
+                // do not move the player
+                _focusedObject.UndoMove();
+                return;
+            }
+            else
+            {
+                // move the box
+                obstacle.PosX = boxX;
+                obstacle.PosY = boxY;
+
+                // this also works if we move box from target to target, because we are smart ppl
+                if (obstacle.Color == ConsoleColor.Green)
+                {
+                    obstacle.Color = ConsoleColor.Yellow;
+                    missingGoals++;
+                }
+                if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
+                {
+                    missingGoals--;
+                    obstacle.Color = ConsoleColor.Green;
+                }
+            }
+        }
         map.Save();
     }
 

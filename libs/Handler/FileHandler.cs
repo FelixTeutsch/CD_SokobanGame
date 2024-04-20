@@ -1,5 +1,7 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 
+using System.Dynamic;
+using System.Diagnostics;
 namespace libs;
 
 using Newtonsoft.Json;
@@ -75,33 +77,23 @@ public static class FileHandler
         filePath = "../Games/Saves/Save1.json";
         dynamic saveFileContent = ReadJson();
 
-        //saveFileContent.map.height = map.MapHeight;
-        //saveFileContent.map.width = map.MapWidth;
-
-        List<string> jsonObjects = new List<string>();
+        List<dynamic> jsonGameObjects = new List<dynamic>();
 
         int i = 0;
 
-        foreach(var gameObject in saveFileContent.gameObjects){
-            /*if(gameObject.Type == "Wall"){
-                continue;
-            }
-            else{
-                //saveFileContent.gameObjects[i].Type = gameObjects[i].Types;
-                //saveFileContent.gameObjects[i].Type = Enum.GetName(typeof(GameObjectType), gameObjects[i].Types);
-                saveFileContent.gameObjects[i].Color = gameObjects[i].Color;
-                saveFileContent.gameObjects[i].PosX = gameObjects[i].PosX;
-                saveFileContent.gameObjects[i].PosY = gameObjects[i].PosY;
-            }*/
+        foreach(var gameObject in gameObjects)
+    {
 
-            jsonObjects.Add(JsonConvert.SerializeObject(gameObject));
-            i++;
-        }
-        //saveFileContent.gameObject = gameObjects;*/
+        dynamic jsonGameObject = new ExpandoObject();
+        //jsonGameObject.Type = Enum.GetName(typeof(GameObjectType), gameObject.Types);
+        jsonGameObject.Color = gameObject.Color;
+        jsonGameObject.PosX = gameObject.PosX;
+        jsonGameObject.PosY = gameObject.PosY;
+        
+        jsonGameObjects.Add(jsonGameObject);
+    }
 
-        string jsonContent = "[" + string.Join(",", jsonObjects) + "]";
-
-        WriteJson(jsonContent, filePath);
+        WriteJson(jsonGameObjects, filePath);
         
     }
 

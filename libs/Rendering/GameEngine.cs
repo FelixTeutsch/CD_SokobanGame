@@ -102,7 +102,10 @@ public sealed class GameEngine
             }
             Console.WriteLine();
         }
-        Console.WriteLine(missingGoals + " goal(s) Missing");
+        if (missingGoals > 0)
+            Console.WriteLine(missingGoals + " goal" + (missingGoals == 1 ? "s" : "") + " Missing");
+        else
+            Console.WriteLine("All goals are filled");
     }
 
     public void CheckCollision()
@@ -170,6 +173,7 @@ public sealed class GameEngine
     {
         map.Undo();
 
+
         GameObject?[,] gameObjectLayer = map.GetGameObjectLayer();
         if (gameObjectLayer == null)
             return;
@@ -199,7 +203,11 @@ public sealed class GameEngine
             if (gameObjectLayer[goal.PosY, goal.PosX].Type == GameObjectType.Box)
                 missingGoals--;
 
-
+        // Update the focused object color to show that move was undone
+        if (_focusedObject.Color != ConsoleColor.White)
+            _focusedObject.setColor(ConsoleColor.White);
+        else
+            _focusedObject.setColor(ConsoleColor.Red);
     }
 
     // Method to create GameObject using the factory from clients
@@ -210,7 +218,7 @@ public sealed class GameEngine
 
     public void AddGameObject(GameObject gameObject)
     {
-        if (gameObject.Type == GameObjectType.Box)
+        if (gameObject.Type == GameObjectType.Goal)
             missingGoals++;
 
         gameObjects.Add(gameObject);

@@ -72,8 +72,6 @@ public class Map
         int prevPosY = gameObject.GetPrevPosY();
         int prevPosX = gameObject.GetPrevPosX();
 
-        GameObject gameObjectCopy = new GameObject(posX, posY, gameObject.Color, gameObject.CharRepresentation, gameObject.Type);
-
         if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player || (GameObjectLayer[posY, posX].Type == GameObjectType.Box && gameObject.Type == GameObjectType.Goal))
         {
             return;
@@ -88,10 +86,7 @@ public class Map
         if (posX >= 0 && posX < _mapWidth &&
                 posY >= 0 && posY < _mapHeight)
         {
-            if (gameObject.Type == GameObjectType.Player)
-                GameObjectLayer[posY, posX] = gameObject;
-            else
-                GameObjectLayer[posY, posX] = gameObjectCopy;
+            GameObjectLayer[posY, posX] = gameObject;
             RepresentationalLayer[gameObject.PosY, gameObject.PosX] = gameObject.CharRepresentation;
         }
     }

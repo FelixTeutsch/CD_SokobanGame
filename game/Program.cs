@@ -19,11 +19,10 @@ class Program
                 // Handle keyboard input
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 bool skipCollisionCheck = inputHandler.Handle(keyInfo);
-                if (skipCollisionCheck)
-                    continue;
+                // check collision only if player is not undoing the move
+                if (!skipCollisionCheck)
+                    engine.CheckCollision();
 
-                // check collision
-                engine.CheckCollision();
             }
             engine.Render();
             Console.WriteLine("Level complete!\nPress any key to continue to the next level...");

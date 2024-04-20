@@ -11,7 +11,7 @@ public static class FileHandler
     private static string path = "../Games/Levels/";
     private static int level = -1;
     private static string[] files;
-    private readonly static string envVar = "GAME_SETUP_PATH";
+    private readonly static string envVar = "LEVELS_PATH";
 
     static FileHandler()
     {
@@ -25,6 +25,12 @@ public static class FileHandler
 
     private static void Initialize()
     {
+
+        if (Environment.GetEnvironmentVariable(envVar) != null)
+        {
+            path = Environment.GetEnvironmentVariable(envVar);
+        };
+
         // Check if environment variable is set
         if (Directory.Exists(path))
         {

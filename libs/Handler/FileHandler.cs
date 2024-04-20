@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 public static class FileHandler
 {
-    private static string filePath;
+    private static string filePath = " ";
     private readonly static string envVar = "GAME_SETUP_PATH";
 
     static FileHandler()
@@ -75,11 +75,33 @@ public static class FileHandler
         filePath = "../Games/Saves/Save1.json";
         dynamic saveFileContent = ReadJson();
 
-        saveFileContent.map.height = map.MapHeight;
-        saveFileContent.map.width = map.MapWidth;
-        //saveFileContent.gameObject = gameObjects;
+        //saveFileContent.map.height = map.MapHeight;
+        //saveFileContent.map.width = map.MapWidth;
 
-        WriteJson(saveFileContent, filePath);
+        List<string> jsonObjects = new List<string>();
+
+        int i = 0;
+
+        foreach(var gameObject in saveFileContent.gameObjects){
+            /*if(gameObject.Type == "Wall"){
+                continue;
+            }
+            else{
+                //saveFileContent.gameObjects[i].Type = gameObjects[i].Types;
+                //saveFileContent.gameObjects[i].Type = Enum.GetName(typeof(GameObjectType), gameObjects[i].Types);
+                saveFileContent.gameObjects[i].Color = gameObjects[i].Color;
+                saveFileContent.gameObjects[i].PosX = gameObjects[i].PosX;
+                saveFileContent.gameObjects[i].PosY = gameObjects[i].PosY;
+            }*/
+
+            jsonObjects.Add(JsonConvert.SerializeObject(gameObject));
+            i++;
+        }
+        //saveFileContent.gameObject = gameObjects;*/
+
+        string jsonContent = "[" + string.Join(",", jsonObjects) + "]";
+
+        WriteJson(jsonContent, filePath);
         
     }
 

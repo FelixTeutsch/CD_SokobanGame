@@ -74,7 +74,7 @@ public class Map
 
         GameObject gameObjectCopy = new GameObject(posX, posY, gameObject.Color, gameObject.CharRepresentation, gameObject.Type);
 
-        if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player)
+        if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player || (GameObjectLayer[posY, posX].Type == GameObjectType.Box && gameObject.Type == GameObjectType.Goal))
         {
             return;
         }

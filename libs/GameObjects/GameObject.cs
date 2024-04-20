@@ -1,4 +1,5 @@
 ﻿namespace libs;
+using Newtonsoft.Json;
 
 public class GameObject : IGameObject, IMovement
 {
@@ -125,6 +126,11 @@ public class GameObject : IGameObject, IMovement
     {
         _posX = _prevPosX;
         _posY = _prevPosY;
+    }
+
+    public string toJSON()
+    {
+        return JsonConvert.SerializeObject(this);
     }
 
 }

@@ -49,15 +49,6 @@ public static class FileHandler
         }
     }
 
-    /*public static dynamic UpdateJson(string path){
-
-        if (string.IsNullOrEmpty(filePath))
-        {
-            throw new InvalidOperationException("JSON file path not provided in environment variable");
-        }
-
-    }*/
-
     public static void WriteJson(object data, string filePath)
 {
     try
@@ -72,29 +63,32 @@ public static class FileHandler
     }
 }
 
-    public static void saveGameState(GameObject? player , List<GameObject> gameObjects, Map map){
+    public static void saveGameState(List<GameObject> gameObjects, Map map){
+
 
         filePath = "../Games/Saves/Save1.json";
         dynamic saveFileContent = ReadJson();
 
+        dynamic jsonContent = new ExpandoObject();
+
+        dynamic jsonMap = new ExpandoObject();
+        jsonMap.height = map.MapHeight;
+        jsonMap.width = map.MapWidth;
+        jsonContent.map = jsonMap;
+
         List<dynamic> jsonGameObjects = new List<dynamic>();
+        foreach (var gameObject in gameObjects)
+        {
+            dynamic jsonGameObject = new ExpandoObject();
+            jsonGameObject.Type = Enum.GetName(typeof(GameObjectType), gameObject.Type);
+            jsonGameObject.Color = gameObject.Color;
+            jsonGameObject.PosX = gameObject.PosX;
+            jsonGameObject.PosY = gameObject.PosY;
+            jsonGameObjects.Add(jsonGameObject);
+        }
+        jsonContent.gameObjects = jsonGameObjects;
 
-        int i = 0;
-
-        foreach(var gameObject in gameObjects)
-    {
-
-        dynamic jsonGameObject = new ExpandoObject();
-        //jsonGameObject.Type = Enum.GetName(typeof(GameObjectType), gameObject.Types);
-        jsonGameObject.Color = gameObject.Color;
-        jsonGameObject.PosX = gameObject.PosX;
-        jsonGameObject.PosY = gameObject.PosY;
-        
-        jsonGameObjects.Add(jsonGameObject);
-    }
-
-        WriteJson(jsonGameObjects, filePath);
-        
+        WriteJson(jsonContent, filePath);
     }
 
 }

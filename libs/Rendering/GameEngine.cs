@@ -76,6 +76,8 @@ public sealed class GameEngine
         map.Reset();
 
         levelName = gameData.levelName;
+        missingGoals = 0;
+
 
         foreach (var gameObject in gameData.gameObjects)
         {

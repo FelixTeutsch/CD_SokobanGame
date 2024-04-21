@@ -50,6 +50,9 @@ public sealed class InputHandler
                     engine.Undo();
                     result = true;
                     break;
+                case ConsoleKey.R:
+                    engine.Setup();
+                    break;
                 default:
                     break;
             }

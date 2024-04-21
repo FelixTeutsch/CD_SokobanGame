@@ -117,14 +117,17 @@ public sealed class GameEngine
         GameObject obstacle = map.Get(player.PosY, player.PosX);
         // move is allowed
         if (obstacle == null || obstacle.Type == GameObjectType.Floor || obstacle.Type == GameObjectType.Goal)
+        {
+            map.Save();
             return;
+        }
 
         if (obstacle.Type == GameObjectType.Wall)
         {
             _focusedObject.UndoMove();
             return;
         }
-        else if (obstacle.Type == GameObjectType.Box)
+        if (obstacle.Type == GameObjectType.Box)
         {
             int boxY = obstacle.PosY + player.getDy();
             int boxX = obstacle.PosX + player.getDx();
@@ -136,25 +139,23 @@ public sealed class GameEngine
                 _focusedObject.UndoMove();
                 return;
             }
-            else
-            {
-                // move the box
-                obstacle.PosX = boxX;
-                obstacle.PosY = boxY;
+            // move the box
+            obstacle.PosX = boxX;
+            obstacle.PosY = boxY;
 
-                // this also works if we move box from target to target, because we are smart ppl
-                if (obstacle.Color == ConsoleColor.Green)
-                {
-                    obstacle.Color = ConsoleColor.Yellow;
-                    missingGoals++;
-                }
-                if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
-                {
-                    missingGoals--;
-                    obstacle.Color = ConsoleColor.Green;
-                }
+            // this also works if we move box from target to target, because we are smart ppl
+            if (obstacle.Color == ConsoleColor.Green)
+            {
+                obstacle.Color = ConsoleColor.Yellow;
+                missingGoals++;
+            }
+            if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
+            {
+                missingGoals--;
+                obstacle.Color = ConsoleColor.Green;
             }
         }
+
         map.Save();
     }
 
@@ -169,14 +170,15 @@ public sealed class GameEngine
         // iterate through all objects and update their position
         for (int y = 0; y < gameObjectLayer.GetLength(0); y++)
             for (int x = 0; x < gameObjectLayer.GetLength(1); x++)
-                if (gameObjectLayer[y, x] != null)
-                    if (gameObjectLayer[y, x].Type == GameObjectType.Box)
+                if (map.Get(y, x) != null)
+                    if (map.Get(y, x).Type == GameObjectType.Box)
                     {
-                        gameObjectLayer[y, x].PosX = x;
-                        gameObjectLayer[y, x].PosY = y;
+                        map.Get(y, x).PosX = x;
+                        map.Get(y, x).PosY = y;
                     }
-                    else if (gameObjectLayer[y, x].Type == GameObjectType.Player)
+                    else if (map.Get(y, x).Type == GameObjectType.Player)
                     {
+
                         _focusedObject.PosX = x;
                         _focusedObject.PosY = y;
                     }

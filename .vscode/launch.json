@@ -10,7 +10,11 @@
 			"args": [],
 			"cwd": "${workspaceFolder}",
 			"stopAtEntry": false,
-			"console": "integratedTerminal"
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"env": {
+				"LEVELS_PATH": "${workspaceFolder}/Games/"
+			}
 		}
 	]
 }

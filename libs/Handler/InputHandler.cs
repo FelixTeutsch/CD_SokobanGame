@@ -26,7 +26,7 @@ public sealed class InputHandler
 
     public bool Handle(ConsoleKeyInfo keyInfo)
     {
-        bool result = false;
+        bool skipCollitionCheck = false;
         GameObject focusedObject = engine.GetFocusedObject();
 
         if (focusedObject != null)
@@ -48,13 +48,20 @@ public sealed class InputHandler
                     break;
                 case ConsoleKey.Z:
                     engine.Undo();
-                    result = true;
+                    skipCollitionCheck = true;
+                    break;
+                case ConsoleKey.R:
+                    engine.Setup();
+                    break;
+                case ConsoleKey.S:
+                    engine.SaveToFile();
+                    skipCollitionCheck = true;
                     break;
                 default:
                     break;
             }
         }
-        return result;
+        return skipCollitionCheck;
     }
 
 }

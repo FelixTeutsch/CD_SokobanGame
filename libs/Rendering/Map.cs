@@ -4,12 +4,18 @@ using Newtonsoft.Json;
 public class Map
 {
     private char[,] RepresentationalLayer;
-
     private List<GameObject?[,]> history = new List<GameObject?[,]>();
     private GameObject?[,] GameObjectLayer;
-
     private int _mapWidth;
     private int _mapHeight;
+    private string _levelName;
+
+    public string LevelName
+    {
+        get { return _levelName; }
+        set { _levelName = value; }
+    }
+
 
     public GameObject?[,] GetGameObjectLayer()
     {
@@ -34,6 +40,7 @@ public class Map
 
     public void Initialize()
     {
+        history.Clear();
         RepresentationalLayer = new char[_mapHeight, _mapWidth];
         GameObjectLayer = new GameObject[_mapHeight, _mapWidth];
 
@@ -71,9 +78,7 @@ public class Map
         int prevPosY = gameObject.GetPrevPosY();
         int prevPosX = gameObject.GetPrevPosX();
 
-        GameObject gameObjectCopy = new GameObject(posX, posY, gameObject.Color, gameObject.CharRepresentation, gameObject.Type);
-
-        if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player)
+        if (GameObjectLayer[posY, posX] != null && GameObjectLayer[posY, posX].Type == GameObjectType.Player || (GameObjectLayer[posY, posX].Type == GameObjectType.Box && gameObject.Type == GameObjectType.Goal))
         {
             return;
         }
@@ -87,17 +92,14 @@ public class Map
         if (posX >= 0 && posX < _mapWidth &&
                 posY >= 0 && posY < _mapHeight)
         {
-            if (gameObject.Type == GameObjectType.Player)
-                GameObjectLayer[posY, posX] = gameObject;
-            else
-                GameObjectLayer[posY, posX] = gameObjectCopy;
+            GameObjectLayer[posY, posX] = gameObject;
             RepresentationalLayer[gameObject.PosY, gameObject.PosX] = gameObject.CharRepresentation;
         }
     }
 
     public void Save()
     {
-        history.Add(GameObjectLayer);
+        history.Add(GameObjectLayer.Clone() as GameObject?[,]);
     }
 
     public void Undo()
@@ -107,5 +109,10 @@ public class Map
             GameObjectLayer = history[history.Count - 1];
             history.RemoveAt(history.Count - 1);
         }
+    }
+
+    public void Reset()
+    {
+        Initialize();
     }
 }

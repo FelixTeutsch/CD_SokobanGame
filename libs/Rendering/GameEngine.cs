@@ -10,12 +10,13 @@ public sealed class GameEngine
 {
     private static GameEngine? _instance;
     private IGameObjectFactory gameObjectFactory;
-
-    private int missingBoxes = 0;
+    private int missingGoals = 0;
+    private string levelName = "";
+    private string levelSaved = "";
 
     public bool IsGameWon()
     {
-        return missingBoxes == 0;
+        return missingGoals == 0;
     }
 
     public static GameEngine Instance
@@ -34,6 +35,9 @@ public sealed class GameEngine
     {
         //INIT PROPS HERE IF NEEDED
         gameObjectFactory = new GameObjectFactory();
+
+        //Added for proper display of game characters
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
     }
 
     private GameObject? _focusedObject;
@@ -41,7 +45,6 @@ public sealed class GameEngine
     private Map map = new Map();
 
     private List<GameObject> gameObjects = new List<GameObject>();
-
 
     public Map GetMap()
     {
@@ -53,16 +56,35 @@ public sealed class GameEngine
         return _focusedObject;
     }
 
+    public void CheckForSaveFiles()
+    {
+        FileHandler.SaveSelector();
+    }
+
+    public bool LoadNextLevel()
+    {
+        bool levelLeft = FileHandler.LoadNextLevel();
+        if (levelLeft)
+            Setup();
+        return levelLeft;
+    }
+
     public void Setup()
     {
-
-        //Added for proper display of game characters
-        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        // reset previous things:
+        gameObjects.Clear();
 
         dynamic gameData = FileHandler.ReadJson();
 
         map.MapWidth = gameData.map.width;
         map.MapHeight = gameData.map.height;
+
+        map.Reset();
+
+        levelName = gameData.levelName;
+        map.LevelName = levelName;
+        missingGoals = 0;
+
 
         foreach (var gameObject in gameData.gameObjects)
         {
@@ -70,19 +92,23 @@ public sealed class GameEngine
         }
 
         _focusedObject = gameObjects.OfType<PlayerSingelton>().First();
+    }
+
+    public void SaveToFile()
+    {
+        levelSaved = FileHandler.saveGameState(gameObjects, map);
 
     }
 
     public void Render()
     {
-
         //Clean the map
         Console.Clear();
 
-        map.Initialize();
-
         PlaceGameObjects();
 
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(levelName);
         //Render the map
         for (int i = 0; i < map.MapHeight; i++)
         {
@@ -92,117 +118,109 @@ public sealed class GameEngine
             }
             Console.WriteLine();
         }
+        if (missingGoals > 0)
+            Console.WriteLine(missingGoals + " goal" + (missingGoals == 1 ? "s" : "") + " Missing");
+        else
+            Console.WriteLine("All goals are filled");
+
+        if (levelSaved != "")
+        {
+            Console.WriteLine("Level has beeb saved under " + levelSaved);
+            levelSaved = "";
+        }
     }
 
     public void CheckCollision()
     {
-        // player = _focusedObject   
-        foreach (var gameObject in gameObjects)
+        // NEW COLLITION CHECK
+
+        GameObject player = _focusedObject;
+        GameObject obstacle = map.Get(player.PosY, player.PosX);
+        // move is allowed
+        if (obstacle == null || obstacle.Type == GameObjectType.Floor || obstacle.Type == GameObjectType.Goal)
         {
-            if (gameObject == _focusedObject || gameObject.Type == GameObjectType.Goal)
-            {
-                continue;
-            }
-            if (gameObject.PosX == _focusedObject.PosX && gameObject.PosY == _focusedObject.PosY)
-            {
-                // check if wall
-                if (gameObject.Type == GameObjectType.Wall)
-                {
-                    // do not move the player
-                    _focusedObject.UndoMove();
-                }
-                else
-                // check if box
-                if (gameObject.Type == GameObjectType.Box)
-                {
-
-                    int boxX = gameObject.PosX + _focusedObject.getDx();
-                    int boxY = gameObject.PosY + _focusedObject.getDy();
-
-                    // check if there is a wall behind the box
-                    if (map.Get(boxY, boxX).Type == GameObjectType.Wall || map.Get(boxY, boxX).Type == GameObjectType.Box)
-                    {
-                        // do not move the player
-                        _focusedObject.UndoMove();
-                    }
-                    else
-                    { // <- why does c# have ugly brackets?
-                        // move the box
-                        gameObject.PosX = boxX;
-                        gameObject.PosY = boxY;
-
-                        // this also works if we move box from target to target, because we are smart ppl
-                        if (gameObject.Color == ConsoleColor.Green)
-                        {
-                            gameObject.Color = ConsoleColor.Yellow;
-                            missingBoxes++;
-                        }
-                        if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
-                        {
-                            missingBoxes--;
-                            gameObject.Color = ConsoleColor.Green;
-                        }
-                    }
-                }
-            }
-            // Get position
-            // iterate through all other objects and check if there is already an object at that position
+            map.Save();
+            return;
         }
 
-        // Save the updated map
+        if (obstacle.Type == GameObjectType.Wall)
+        {
+            _focusedObject.UndoMove();
+            return;
+        }
+        else if (obstacle.Type == GameObjectType.Box)
+        {
+            int boxY = obstacle.PosY + player.getDy();
+            int boxX = obstacle.PosX + player.getDx();
+            GameObject obstacleObstacle = map.Get(boxY, boxX);
+
+            if (obstacleObstacle.Type == GameObjectType.Wall || obstacleObstacle.Type == GameObjectType.Box)
+            {
+                // do not move the player
+                _focusedObject.UndoMove();
+                return;
+            }
+            else
+            {
+                // move the box
+                obstacle.PosX = boxX;
+                obstacle.PosY = boxY;
+
+                // this also works if we move box from target to target, because we are smart ppl
+                if (obstacle.Color == ConsoleColor.Green)
+                {
+                    obstacle.Color = ConsoleColor.Yellow;
+                    missingGoals++;
+                }
+                if (map.Get(boxY, boxX).Type == GameObjectType.Goal)
+                {
+                    missingGoals--;
+                    obstacle.Color = ConsoleColor.Green;
+                }
+            }
+        }
         map.Save();
     }
 
     public void Undo()
     {
         map.Undo();
-        List<Box> boxes = gameObjects.OfType<Box>().ToList();
-        foreach (var box in boxes)
-        {
-            gameObjects.Remove(box);
-        }
-
 
         GameObject?[,] gameObjectLayer = map.GetGameObjectLayer();
+        if (gameObjectLayer == null)
+            return;
 
-        for (int x = 0; x < gameObjectLayer.GetLength(0); x++)
-        {
-            for (int y = 0; y < gameObjectLayer.GetLength(1); y++)
-            {
-                if (gameObjectLayer[x, y] != null)
-                {
-                    if (gameObjectLayer[x, y].Type == GameObjectType.Box)
+        // iterate through all objects and update their position
+        for (int y = 0; y < gameObjectLayer.GetLength(0); y++)
+            for (int x = 0; x < gameObjectLayer.GetLength(1); x++)
+                if (gameObjectLayer[y, x] != null)
+                    if (gameObjectLayer[y, x].Type == GameObjectType.Box)
                     {
-
-                        Box newBox = new Box(//
-                            gameObjectLayer[x, y].PosX, //
-                            gameObjectLayer[x, y].PosY, //
-                            gameObjectLayer[x, y].Color, //
-                            gameObjectLayer[x, y].CharRepresentation, //
-                            GameObjectType.Box);
-                        AddGameObject(newBox);
+                        gameObjectLayer[y, x].PosX = x;
+                        gameObjectLayer[y, x].PosY = y;
+                        gameObjectLayer[y, x].setColor(ConsoleColor.Yellow);
+                    }
+                    else if (gameObjectLayer[y, x].Type == GameObjectType.Player)
+                    {
+                        _focusedObject.PosX = x;
+                        _focusedObject.PosY = y;
                     }
 
-                    else if (gameObjectLayer[x, y].Type == GameObjectType.Player)
-                    {
-                        _focusedObject = gameObjectLayer[x, y];
-                        _focusedObject.PosX = y;
-                        _focusedObject.PosY = x;
-                    }
-                }
-            }
-        }
 
 
-        missingBoxes = boxes.Count;
-        boxes = gameObjects.OfType<Box>().ToList();
-        foreach (var box in boxes)
-        {
-            if (box.Color == ConsoleColor.Green)
+        // Update the missing boxes
+        List<Goal> goals = gameObjects.OfType<Goal>().ToList();
+        missingGoals = goals.Count;
+
+        foreach (var goal in goals)
+            if (gameObjectLayer[goal.PosY, goal.PosX].Type == GameObjectType.Box)
             {
-                missingBoxes--;
+                gameObjectLayer[goal.PosY, goal.PosX].setColor(ConsoleColor.Green);
+                missingGoals--;
             }
-        }
+
+        // Update the focused object color to show that move was undone
+        _focusedObject.setColor(ConsoleColor.Red);
     }
 
     // Method to create GameObject using the factory from clients
@@ -213,8 +231,11 @@ public sealed class GameEngine
 
     public void AddGameObject(GameObject gameObject)
     {
-        if (gameObject.Type == GameObjectType.Box)
-            missingBoxes++;
+        if (gameObject.Type == GameObjectType.Goal)
+            missingGoals++;
+        // remove a missing goal if a box is placed on it
+        else if (gameObject.Type == GameObjectType.Box && gameObject.Color == ConsoleColor.Green)
+            missingGoals--;
 
         gameObjects.Add(gameObject);
     }
@@ -222,16 +243,17 @@ public sealed class GameEngine
     private void PlaceGameObjects()
     {
         map.Set(_focusedObject);
-        gameObjects.ForEach(delegate (GameObject obj)
-        {
-            if (obj != _focusedObject)
-                map.Set(obj);
-        });
+        gameObjects.ForEach(
+            delegate (GameObject obj)
+            {
+                if (obj != _focusedObject)
+                    map.Set(obj);
+            }
+        );
     }
 
     private void DrawObject(GameObject gameObject)
     {
-
         Console.ResetColor();
 
         if (gameObject != null)

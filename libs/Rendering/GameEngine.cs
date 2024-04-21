@@ -56,6 +56,11 @@ public sealed class GameEngine
         return _focusedObject;
     }
 
+    public void CheckForSaveFiles()
+    {
+        FileHandler.SaveSelector();
+    }
+
     public bool LoadNextLevel()
     {
         bool levelLeft = FileHandler.LoadNextLevel();
@@ -228,6 +233,9 @@ public sealed class GameEngine
     {
         if (gameObject.Type == GameObjectType.Goal)
             missingGoals++;
+        // remove a missing goal if a box is placed on it
+        else if (gameObject.Type == GameObjectType.Box && gameObject.Color == ConsoleColor.Green)
+            missingGoals--;
 
         gameObjects.Add(gameObject);
     }

@@ -9,6 +9,8 @@ class Program
         var engine = GameEngine.Instance;
         var inputHandler = InputHandler.Instance;
 
+        // Allow user to select saved game
+        engine.CheckForSaveFiles();
 
         while (engine.LoadNextLevel())
         {

@@ -12,6 +12,7 @@ public static class FileHandler
 
     private static string path = "../Games/";
     private static int level = -1;
+    private static bool saveLoaded = false;
     private static string[] files;
     private readonly static string envVar = "LEVELS_PATH";
 
@@ -46,23 +47,85 @@ public static class FileHandler
 
     }
 
+    public static void SaveSelector()
+    {
+        string[] saveFiles = Directory.GetFiles(path + "/Saves/").OrderBy(filePath => filePath).ToArray();
+        if (saveFiles.Length == 0)
+        {
+            return;
+        }
+
+        Console.Clear();
+        Console.WriteLine("Would you like to load a game save?");
+        for (int i = 0; i < saveFiles.Length; i++)
+        {
+            string fileName = Path.GetFileName(saveFiles[i]); // Extracting only the file name
+            Console.WriteLine($"{i + 1}: {fileName}");
+        }
+
+        bool validInput = false;
+        while (!validInput)
+        {
+            try
+            {
+                Console.Write("\nEnter the number of the save file you would like to load(1 / " + saveFiles.Length + ") or 0 to just play: ");
+                int saveFileNumber = Convert.ToInt32(Console.ReadLine());
+                if (saveFileNumber == 0)
+                {
+                    validInput = true;
+                    Console.Clear();
+                    return;
+                }
+                if (saveFileNumber > 0 && saveFileNumber <= saveFiles.Length)
+                {
+                    validInput = true;
+                    string saveFile = saveFiles[saveFileNumber - 1];
+                    dynamic saveFileContent = ReadJson(saveFile);
+                    level = saveFileContent.levelNumber;
+                    files[level] = saveFiles[saveFileNumber - 1];
+                    saveLoaded = true;
+                    Console.Clear();
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please enter a number between 1 and " + saveFiles.Length);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+    }
+
     public static bool LoadNextLevel()
     {
-
+        if (saveLoaded)
+        {
+            saveLoaded = false;
+            return true;
+        }
         level++;
         return IsLevelsLeft();
     }
 
+
+
     public static dynamic ReadJson()
     {
-        if (string.IsNullOrEmpty(files[level]))
+        string levelPath = files[level];
+        return ReadJson(levelPath);
+    }
+    public static dynamic ReadJson(string path)
+    {
+        if (string.IsNullOrEmpty(path))
         {
             throw new InvalidOperationException("JSON file path not provided in environment variable");
         }
 
         try
         {
-            string jsonContent = File.ReadAllText(files[level]);
+            string jsonContent = File.ReadAllText(path);
             dynamic jsonData = JsonConvert.DeserializeObject(jsonContent);
             return jsonData;
         }

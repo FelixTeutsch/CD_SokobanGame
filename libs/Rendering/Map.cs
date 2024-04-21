@@ -4,12 +4,18 @@ using Newtonsoft.Json;
 public class Map
 {
     private char[,] RepresentationalLayer;
-
     private List<GameObject?[,]> history = new List<GameObject?[,]>();
     private GameObject?[,] GameObjectLayer;
-
     private int _mapWidth;
     private int _mapHeight;
+    private string _levelName;
+
+    public string LevelName
+    {
+        get { return _levelName; }
+        set { _levelName = value; }
+    }
+
 
     public GameObject?[,] GetGameObjectLayer()
     {

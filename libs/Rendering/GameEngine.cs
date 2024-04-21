@@ -12,6 +12,7 @@ public sealed class GameEngine
     private IGameObjectFactory gameObjectFactory;
     private int missingGoals = 0;
     private string levelName = "";
+    private string levelSaved = "";
 
     public bool IsGameWon()
     {
@@ -76,6 +77,7 @@ public sealed class GameEngine
         map.Reset();
 
         levelName = gameData.levelName;
+        map.LevelName = levelName;
         missingGoals = 0;
 
 
@@ -85,6 +87,12 @@ public sealed class GameEngine
         }
 
         _focusedObject = gameObjects.OfType<PlayerSingelton>().First();
+    }
+
+    public void SaveToFile()
+    {
+        levelSaved = FileHandler.saveGameState(gameObjects, map);
+
     }
 
     public void Render()
@@ -109,6 +117,12 @@ public sealed class GameEngine
             Console.WriteLine(missingGoals + " goal" + (missingGoals == 1 ? "s" : "") + " Missing");
         else
             Console.WriteLine("All goals are filled");
+
+        if (levelSaved != "")
+        {
+            Console.WriteLine("Level has beeb saved under " + levelSaved);
+            levelSaved = "";
+        }
     }
 
     public void CheckCollision()

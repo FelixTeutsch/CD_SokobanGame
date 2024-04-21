@@ -117,7 +117,10 @@ public sealed class GameEngine
         GameObject obstacle = map.Get(player.PosY, player.PosX);
         // move is allowed
         if (obstacle == null || obstacle.Type == GameObjectType.Floor || obstacle.Type == GameObjectType.Goal)
+        {
+            map.Save();
             return;
+        }
 
         if (obstacle.Type == GameObjectType.Wall)
         {
@@ -174,6 +177,7 @@ public sealed class GameEngine
                     {
                         gameObjectLayer[y, x].PosX = x;
                         gameObjectLayer[y, x].PosY = y;
+                        gameObjectLayer[y, x].setColor(ConsoleColor.Yellow);
                     }
                     else if (gameObjectLayer[y, x].Type == GameObjectType.Player)
                     {
@@ -189,13 +193,13 @@ public sealed class GameEngine
 
         foreach (var goal in goals)
             if (gameObjectLayer[goal.PosY, goal.PosX].Type == GameObjectType.Box)
+            {
+                gameObjectLayer[goal.PosY, goal.PosX].setColor(ConsoleColor.Green);
                 missingGoals--;
+            }
 
         // Update the focused object color to show that move was undone
-        if (_focusedObject.Color != ConsoleColor.White)
-            _focusedObject.setColor(ConsoleColor.White);
-        else
-            _focusedObject.setColor(ConsoleColor.Red);
+        _focusedObject.setColor(ConsoleColor.Red);
     }
 
     // Method to create GameObject using the factory from clients

@@ -93,7 +93,7 @@ public class Map
 
     public void Save()
     {
-        history.Add(GameObjectLayer);
+        history.Add(GameObjectLayer.Clone() as GameObject?[,]);
     }
 
     public void Undo()
